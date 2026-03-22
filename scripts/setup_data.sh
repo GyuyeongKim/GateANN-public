@@ -58,6 +58,20 @@ with open(query_path, 'wb') as f:
     f.write(struct.pack('I', nqueries))
     f.write(query_labels.tobytes())
 print(f"  Wrote {query_path}  ({nqueries} queries)")
+
+# Text format for official DiskANN (one label per line)
+node_txt_path = os.path.join(outdir, f"{prefix}_node_labels.txt")
+with open(node_txt_path, 'w') as f:
+    for lbl in node_labels:
+        f.write(f"{lbl}\n")
+print(f"  Wrote {node_txt_path}  (text format for official DiskANN)")
+
+query_txt_path = os.path.join(outdir, f"{prefix}_query_filters.txt")
+with open(query_txt_path, 'w') as f:
+    for lbl in query_labels:
+        f.write(f"{lbl}\n")
+print(f"  Wrote {query_txt_path}  (text format for official DiskANN)")
+
 print(f"  NOTE: Ground truth must be computed separately with the built index.")
 PYEOF
 }
