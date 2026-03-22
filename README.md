@@ -1,0 +1,324 @@
+# GateANN: I/O-Efficient Filtered Vector Search on Unmodified Graph Indexes
+
+This repository contains the artifact for the paper:
+
+> **GateANN: I/O-Efficient Filtered Vector Search on Unmodified Graph Indexes**
+
+GateANN is an SSD-based graph ANNS system that achieves I/O-efficient filtered vector search on an **unmodified** graph index.
+It checks each node's filter metadata **before** issuing SSD I/O and uses **graph tunneling** to traverse non-matching nodes entirely in memory, eliminating up to 90% of SSD reads at 10% selectivity while maintaining recall comparable to post-filtering baselines.
+
+GateANN is implemented as a single additional search mode on top of the [PipeANN](https://github.com/thustorage/PipeANN) codebase.
+
+## Key Results
+
+- Up to **10x fewer SSD I/Os** vs. post-filter baselines
+- Up to **7.6x higher throughput** at 10% selectivity with comparable recall
+- Works on **any filter predicate** without index rebuild
+- Scales from 10M to **1B vectors** on a single commodity server
+
+---
+
+## Table of Contents
+
+- [Hardware Requirements](#hardware-requirements)
+- [Software Dependencies](#software-dependencies)
+- [Getting Started (~30 min)](#getting-started)
+- [Directory Structure](#directory-structure)
+- [Datasets](#datasets)
+- [Building the Index](#building-the-index)
+- [Reproducing Results](#reproducing-results)
+  - [Quick Validation (~10 min)](#quick-validation)
+  - [Full Reproduction (~24 hours)](#full-reproduction)
+  - [Per-Figure Scripts](#per-figure-scripts)
+- [Paper Claims and Artifact Support](#paper-claims-and-artifact-support)
+- [Citation](#citation)
+
+---
+
+## Hardware Requirements
+
+| Component | Minimum | Recommended (Paper Setup) |
+|-----------|---------|---------------------------|
+| CPU | x86-64 with AVX2 | Intel Xeon w9-3495X (56C) |
+| DRAM | 64 GB | 256 GB |
+| SSD | 1 TB NVMe | 2 TB NVMe |
+| OS | Linux 5.10+ (io_uring) | Ubuntu 22.04 LTS |
+
+**Notes:**
+- `io_uring` support requires Linux kernel >= 5.1 (5.10+ recommended).
+- DRAM requirements depend on dataset scale and `R_max` setting:
+  - 100M vectors, R_max=32: ~17 GB (index + neighbor store)
+  - 1B vectors, R_max=16: ~70 GB
+- All experiments in the paper use a single machine (no distributed setup).
+
+## Software Dependencies
+
+```bash
+# System packages
+sudo apt-get update
+sudo apt-get install -y build-essential cmake g++ libmkl-dev \
+    libomp-dev libgoogle-perftools-dev python3 python3-pip
+
+# Python packages (for plotting)
+pip3 install matplotlib numpy
+
+# liburing (included in third_party/)
+cd third_party/liburing && ./configure && make -j && cd ../..
+```
+
+**Summary:**
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| CMake | >= 3.5 | Build system |
+| GCC | >= 9.0 | C++17 support |
+| Intel MKL / OpenBLAS | any | BLAS for distance computation |
+| liburing | >= 2.0 | Async I/O (included) |
+| tcmalloc | any | Memory allocator (`libgoogle-perftools-dev`) |
+| OpenMP | >= 4.5 | Thread parallelism |
+| Python 3 | >= 3.8 | Plotting scripts |
+| matplotlib | >= 3.5 | Figure generation |
+
+---
+
+## Getting Started
+
+### 1. Build
+
+```bash
+git clone https://github.com/GyuyeongKim/GateANN.git
+cd GateANN
+
+# Build liburing (if not installed system-wide)
+cd third_party/liburing && ./configure && make -j && cd ../..
+
+# Build GateANN
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
+```
+
+### 2. Verify Build
+
+After a successful build, the following binaries should exist in `build/tests/`:
+
+| Binary | Description |
+|--------|-------------|
+| `build_disk_index` | Build Vamana graph index on SSD |
+| `build_memory_index` | Build in-memory Vamana index |
+| `search_disk_index_fa` | **Main experiment binary** (modes 0/2/8/9/10) |
+| `search_disk_index_yfcc` | YFCC multi-label experiment binary |
+| `search_mem_fa` | In-memory Vamana baseline |
+
+### 3. Quick Smoke Test
+
+```bash
+# Download a small test dataset (BigANN-10M subset) and run a quick search
+# See scripts/setup_data.sh for full dataset download instructions
+./scripts/quick_test.sh
+```
+
+---
+
+## Directory Structure
+
+```
+GateANN/
+├── README.md                     # This file
+├── CMakeLists.txt                # Top-level build configuration
+├── include/                      # Header files
+│   ├── ssd_index.h               # SSD index with search mode dispatch
+│   ├── utils/
+│   │   ├── filter_store.h        # [GateANN] Single-label filter store
+│   │   ├── spmat_filter_store.h  # [GateANN] Multi-label filter store (CSR)
+│   │   └── full_adj_index.h      # [GateANN] Neighbor store for tunneling
+│   ├── nbr/                      # PQ distance computation
+│   └── filter/                   # Filter selector interface
+├── src/                          # Source files
+│   ├── search/
+│   │   ├── pipe_search.cpp       # Asynchronous pipeline search (core)
+│   │   └── beam_search.cpp       # Synchronous beam search (DiskANN)
+│   ├── ssd_index.cpp             # SSD index management
+│   └── ...
+├── tests/                        # Experiment binaries
+│   ├── search_disk_index_fa.cpp  # Main filtered search experiments
+│   ├── search_disk_index_yfcc.cpp # YFCC multi-label experiments
+│   └── search_mem_fa.cpp         # In-memory Vamana baseline
+├── scripts/                      # Experiment and plotting scripts
+│   ├── run_all.sh                # Master script: reproduce all figures
+│   ├── fig01_pareto.sh           # Per-figure experiment scripts
+│   ├── plot_pareto_bigann.py     # Per-figure plotting scripts
+│   └── ...
+├── third_party/
+│   └── liburing/                 # io_uring library (included)
+├── data/                         # Datasets (download separately)
+└── figures/                      # Generated figures (output)
+```
+
+### GateANN-Specific Files
+
+The following files contain GateANN's contributions on top of PipeANN:
+
+| File | Lines | Description |
+|------|-------|-------------|
+| `include/utils/filter_store.h` | ~60 | O(1) single-label pre-IO filter check |
+| `include/utils/spmat_filter_store.h` | ~80 | CSR-based multi-label subset predicate |
+| `include/utils/full_adj_index.h` | ~140 | Neighbor store for graph tunneling |
+| `src/search/pipe_search.cpp` (lines 352-401) | ~50 | Pre-IO filter check + tunneling logic |
+
+---
+
+## Datasets
+
+The paper evaluates on four datasets:
+
+| Dataset | Vectors | Dimensions | Type | Size | Labels |
+|---------|---------|------------|------|------|--------|
+| BigANN-100M | 100M | 128 | uint8 | 12.8 GB | Synthetic (uniform/Zipf) |
+| DEEP-100M | 100M | 96 | float32 | 38.4 GB | Synthetic (uniform) |
+| YFCC-10M | 10M | 192 | uint8 | 1.9 GB | Real multi-label |
+| BigANN-1B | 1B | 128 | uint8 | 128 GB | Synthetic (uniform) |
+
+### Download
+
+```bash
+# BigANN-100M (required for most experiments)
+./scripts/setup_data.sh bigann100M
+
+# DEEP-100M
+./scripts/setup_data.sh deep100M
+
+# YFCC-10M (includes real multi-label metadata)
+./scripts/setup_data.sh yfcc10M
+
+# BigANN-1B (requires ~200 GB disk space for index + data)
+./scripts/setup_data.sh bigann1B
+```
+
+---
+
+## Building the Index
+
+```bash
+# Build BigANN-100M disk index (R=128, L=200, PQ dim=32)
+./build/tests/build_disk_index uint8 \
+    data/bigann100M/bigann100M_base.u8bin \
+    data/bigann100M/index/bigann100M \
+    128 200 32 80 60
+
+# Build in-memory index for Vamana baseline
+./build/tests/build_memory_index uint8 \
+    data/bigann100M/bigann100M_base.u8bin \
+    data/bigann100M/index/bigann100M_mem \
+    128 200
+```
+
+---
+
+## Reproducing Results
+
+### Search Modes
+
+| Mode | System | Description |
+|------|--------|-------------|
+| 0 | DiskANN | Synchronous beam search (post-filter) |
+| 2 | PipeANN | Asynchronous pipeline search (post-filter) |
+| **8** | **GateANN** | **Pre-IO filter check + graph tunneling** |
+| 9 | PipeANN+EarlyFilter | Skip exact distance for non-matching (ablation) |
+| 10 | Filtered-DiskANN | Hard candidate filter + per-label medoids |
+
+### Quick Validation
+
+Run a subset of the main experiments to verify the artifact (~10 min):
+
+```bash
+./scripts/quick_validate.sh
+```
+
+This runs BigANN-100M at 10% selectivity with T=1 and a few L values, comparing DiskANN (mode=0), PipeANN (mode=2), and GateANN (mode=8). Expected output:
+- GateANN should achieve **5-8x higher QPS** than PipeANN at comparable recall
+- GateANN should use **~10x fewer SSD I/Os** than PipeANN
+
+### Full Reproduction
+
+To reproduce all paper figures (~24 hours total):
+
+```bash
+./scripts/run_all.sh
+```
+
+This sequentially runs all experiments and generates all figures in `figures/`.
+
+### Per-Figure Scripts
+
+Each figure in the paper has a dedicated experiment + plot script pair:
+
+| Figure | Paper Section | Script | Plot | Est. Time |
+|--------|---------------|--------|------|-----------|
+| Fig. 1(a-b) | Motivation | `scripts/fig01_motivation.sh` | `scripts/plot_motivation.py` | 30 min |
+| Fig. 4(a-d) | Pareto (100M) | `scripts/fig04_pareto_main.sh` | `scripts/plot_pareto_bigann.py`, `plot_pareto_deep.py` | 3 hr |
+| Fig. 5 | Thread scaling | `scripts/fig05_thread_scaling.sh` | `scripts/plot_thread_scaling.py` | 30 min |
+| Fig. 6(a-b) | I/O reduction | `scripts/fig06_io_reduction.sh` | `scripts/plot_io_reduction.py` | 1 hr |
+| Fig. 7(a-b) | BigANN-1B | `scripts/fig07_billion.sh` | `scripts/plot_pareto_bigann1B.py` | 6 hr |
+| Fig. 8 | YFCC-10M | `scripts/fig08_yfcc.sh` | `scripts/plot_yfcc_tput.py` | 30 min |
+| Fig. 9(a-b) | Vamana comparison | `scripts/fig09_vamana.sh` | `scripts/plot_vamana.py` | 1 hr |
+| Fig. 10(a-b) | F-DiskANN comparison | `scripts/fig10_fdiskann.sh` | `scripts/plot_fdiskann.py` | 2 hr |
+| Fig. 11 | Selectivity sweep | `scripts/fig11_selectivity.sh` | `scripts/plot_selectivity.py` | 1 hr |
+| Fig. 12(a-b) | R_max sweep | `scripts/fig12_nbrs_sweep.sh` | `scripts/plot_nbrs_qps.py`, `plot_nbrs_pareto.py` | 2 hr |
+| Fig. 13(a-b) | Zipf distribution | `scripts/fig13_zipf.sh` | `scripts/plot_zipf.py` | 1 hr |
+| Fig. 14 | Spatial correlation | `scripts/fig14_spatial.sh` | `scripts/plot_spatial_correlation.py` | 1 hr |
+| Fig. 15(a-b) | Range predicates | `scripts/fig15_range.sh` | `scripts/plot_range_predicate.py` | 1 hr |
+| Fig. 16(a-b) | Pipeline depth | `scripts/fig16_bw_sweep.sh` | `scripts/plot_bw_sweep.py` | 1 hr |
+| Fig. 17(a-b) | Ablation | `scripts/fig17_ablation.sh` | `scripts/plot_early_filter.py` | 1 hr |
+| Table 3 | SSD speed impact | `scripts/tab03_ssd_impact.sh` | (printed to stdout) | 30 min |
+| Table 4 | Time breakdown | `scripts/tab04_breakdown.sh` | (printed to stdout) | 15 min |
+
+**Usage:**
+```bash
+# Run a single figure's experiment + plot
+./scripts/fig04_pareto_main.sh      # runs experiment, writes results to data/
+python3 scripts/plot_pareto_bigann.py   # generates figures/fig_pareto_bigann_{lat,tput}.{eps,png}
+
+# Or use the convenience wrapper
+./scripts/run_figure.sh 4           # runs experiment + plot for Figure 4
+```
+
+---
+
+## Paper Claims and Artifact Support
+
+| Claim | Section | Supported By |
+|-------|---------|--------------|
+| GateANN achieves up to 10x fewer SSD I/Os | S5.3 | Fig. 6 |
+| GateANN achieves up to 7.6x throughput at 10% selectivity | S5.2 | Fig. 4, 5 |
+| GateANN scales to 1B vectors | S5.4 | Fig. 7 |
+| GateANN supports multi-label predicates | S5.5 | Fig. 8 |
+| GateANN outperforms in-memory Vamana in latency | S5.6 | Fig. 9 |
+| GateANN outperforms Filtered-DiskANN | S5.7 | Fig. 10 |
+| Gains increase with lower selectivity | S5.8 | Fig. 11 |
+| R_max controls memory-performance tradeoff | S5.9 | Fig. 12 |
+| Results hold under skewed distributions | S5.10 | Fig. 13 |
+| Results hold with range predicates | S5.12 | Fig. 15 |
+| I/O elimination dominates CPU savings | S5.16 | Fig. 17 |
+
+**Expected variance:** Results may vary by ±5-10% in QPS due to system load, SSD wear state, and thermal throttling. Recall values should be stable within ±0.5%. The qualitative conclusions (relative ordering of systems, speedup ratios) should be consistent.
+
+---
+
+## Citation
+
+```bibtex
+@inproceedings{gateann,
+  title     = {{GateANN}: {I/O}-Efficient Filtered Vector Search on Unmodified Graph Indexes},
+  year      = {2026},
+}
+```
+
+---
+
+## Acknowledgments
+
+GateANN is built on top of [PipeANN](https://github.com/thustorage/PipeANN). We thank the PipeANN authors for making their codebase available.
+
+## License
+
+This project is released under the MIT License. See [LICENSE](LICENSE) for details.
