@@ -30,7 +30,6 @@ GateANN is implemented as a single additional search mode on top of the [PipeANN
   - [Quick Validation (~10 min)](#quick-validation)
   - [Full Reproduction (~24 hours)](#full-reproduction)
   - [Per-Figure Scripts](#per-figure-scripts)
-- [Paper Claims and Artifact Support](#paper-claims-and-artifact-support)
 - [Citation](#citation)
 
 ---
@@ -54,15 +53,14 @@ GateANN is implemented as a single additional search mode on top of the [PipeANN
 ## Software Dependencies
 
 ```bash
-# System packages
+# One-step installation (Ubuntu 22.04)
+./scripts/install_deps.sh
+
+# Or manually:
 sudo apt-get update
 sudo apt-get install -y build-essential cmake g++ libmkl-dev \
     libomp-dev libgoogle-perftools-dev python3 python3-pip
-
-# Python packages (for plotting)
 pip3 install matplotlib numpy
-
-# liburing (included in third_party/)
 cd third_party/liburing && ./configure && make -j && cd ../..
 ```
 
@@ -112,9 +110,8 @@ After a successful build, the following binaries should exist in `build/tests/`:
 ### 3. Quick Smoke Test
 
 ```bash
-# Download a small test dataset (BigANN-10M subset) and run a quick search
-# See scripts/setup_data.sh for full dataset download instructions
-./scripts/quick_test.sh
+# Run a quick validation with BigANN-100M (requires data + index)
+./scripts/quick_validate.sh
 ```
 
 ---
@@ -198,19 +195,58 @@ The paper evaluates on four datasets:
 
 ## Building the Index
 
+Parameters: `build_disk_index <type> <base_file> <index_prefix> <R> <L> <PQ_dim> <merge_threshold> <build_threads>`
+
+### BigANN-100M
+
 ```bash
-# Build BigANN-100M disk index (R=128, L=200, PQ dim=32)
 ./build/tests/build_disk_index uint8 \
     data/bigann100M/bigann100M_base.u8bin \
     data/bigann100M/index/bigann100M \
     128 200 32 80 60
+```
 
-# Build in-memory index for Vamana baseline
+### DEEP-100M
+
+```bash
+./build/tests/build_disk_index float \
+    data/deep100M/deep100M_base.fbin \
+    data/deep100M/index/deep100M \
+    128 200 32 80 60
+```
+
+### YFCC-10M
+
+```bash
+./build/tests/build_disk_index uint8 \
+    data/yfcc10M/yfcc10M_base.u8bin \
+    data/yfcc10M/index/yfcc10M \
+    128 200 32 80 60
+```
+
+### BigANN-1B
+
+**Note:** Building a 1B-scale index requires substantial resources. The merge phase alone can use ~200 GB of temporary disk space, and DRAM usage peaks at ~128 GB. We used a dedicated 2 TB NVMe SSD for index construction to avoid running out of space.
+
+```bash
+./build/tests/build_disk_index uint8 \
+    data/bigann1B/bigann1B_base.u8bin \
+    data/bigann1B/index/bigann1B \
+    128 200 32 80 60
+```
+
+### In-memory Vamana Baseline
+
+```bash
 ./build/tests/build_memory_index uint8 \
     data/bigann100M/bigann100M_base.u8bin \
     data/bigann100M/index/bigann100M_mem \
     128 200
 ```
+
+### Neighbor Store (FullAdjIndex)
+
+GateANN (mode=8) requires a neighbor store that maps each node to its top-`R_max` graph neighbors in DRAM. The store is built automatically on first run and saved as `<index_prefix>_full_adj_<R_max>.bin`. Subsequent runs load it directly via `mmap`, so the one-time construction cost is amortized across experiments.
 
 ---
 
@@ -281,26 +317,6 @@ python3 scripts/plot_pareto_bigann.py   # generates figures/fig_pareto_bigann_{l
 # Or use the convenience wrapper
 ./scripts/run_figure.sh 4           # runs experiment + plot for Figure 4
 ```
-
----
-
-## Paper Claims and Artifact Support
-
-| Claim | Section | Supported By |
-|-------|---------|--------------|
-| GateANN achieves up to 10x fewer SSD I/Os | S5.3 | Fig. 6 |
-| GateANN achieves up to 7.6x throughput at 10% selectivity | S5.2 | Fig. 4, 5 |
-| GateANN scales to 1B vectors | S5.4 | Fig. 7 |
-| GateANN supports multi-label predicates | S5.5 | Fig. 8 |
-| GateANN outperforms in-memory Vamana in latency | S5.6 | Fig. 9 |
-| GateANN outperforms Filtered-DiskANN | S5.7 | Fig. 10 |
-| Gains increase with lower selectivity | S5.8 | Fig. 11 |
-| R_max controls memory-performance tradeoff | S5.9 | Fig. 12 |
-| Results hold under skewed distributions | S5.10 | Fig. 13 |
-| Results hold with range predicates | S5.12 | Fig. 15 |
-| I/O elimination dominates CPU savings | S5.16 | Fig. 17 |
-
-**Expected variance:** Results may vary by ±5-10% in QPS due to system load, SSD wear state, and thermal throttling. Recall values should be stable within ±0.5%. The qualitative conclusions (relative ordering of systems, speedup ratios) should be consistent.
 
 ---
 

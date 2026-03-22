@@ -29,7 +29,6 @@ namespace pipeann {
     double bd_io_us = 0;        // IO submit + poll + wait
     double bd_tunnel_us = 0;    // filter check + FullAdjIndex lookup + PQ distance
     double bd_process_us = 0;   // exact distance + neighbor expansion on IO-completed nodes
-    double n_early_term = 0;    // 1 if early-terminated, 0 otherwise
   };
 
   inline double get_percentile_stats(QueryStats *stats, uint64_t len, float percentile,
