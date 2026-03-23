@@ -134,7 +134,7 @@ setup_bigann100M() {
     echo "     ./build/tests/build_disk_index uint8 $BASE_FILE ${DATA_DIR}/pipeann_indices/bigann100M 128 200 32 80 64 l2 pq"
     echo "  2. Generate ground truth (filtered):"
     echo "     (see README.md for instructions)"
-    echo "  3. Run experiments: ./scripts/fig04_pareto_main.sh"
+    echo "  3. Run experiments: ./scripts/fig05_pareto_main.sh"
 }
 
 ###############################################################################
@@ -224,7 +224,7 @@ setup_yfcc10M() {
     echo "  Next steps:"
     echo "  1. Build index:"
     echo "     ./build/tests/build_disk_index uint8 $BASE_FILE ${DATA_DIR}/pipeann_indices/yfcc10M 128 200 32 80 64 l2 pq"
-    echo "  2. Generate filtered GT, then run: ./scripts/fig08_yfcc.sh"
+    echo "  2. Generate filtered GT, then run: ./scripts/fig09_yfcc.sh"
 }
 
 ###############################################################################
@@ -272,7 +272,7 @@ setup_bigann1B() {
     echo "  Next steps:"
     echo "  1. Build index (expect 2-3 days):"
     echo "     ./build/tests/build_disk_index uint8 $BASE_FILE ${DATA_DIR}/pipeann_indices/bigann1B 128 200 32 80 60 l2 pq"
-    echo "  2. Generate filtered GT, then run: ./scripts/fig07_billion.sh"
+    echo "  2. Generate filtered GT, then run: ./scripts/fig08_billion.sh"
 }
 
 ###############################################################################

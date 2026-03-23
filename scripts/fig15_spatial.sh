@@ -5,7 +5,7 @@ set -e
 # k-means correlated labels at alpha=0.0, 0.25, 0.5, 0.75, 1.0
 # GateANN only, T=32
 #
-# Usage: ./scripts/fig14_spatial.sh
+# Usage: ./scripts/fig15_spatial.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -84,4 +84,4 @@ done
 } > "$OUTFILE"
 
 log "Spatial correlation done -> $OUTFILE"
-log "=== fig14_spatial.sh COMPLETE ==="
+log "=== fig15_spatial.sh COMPLETE ==="

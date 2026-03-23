@@ -6,7 +6,7 @@ set -e
 # mode=9: pre-IO filter check but NO tunneling (IO still happens, exact dist skipped)
 # mode=8: pre-IO filter check + FullAdjIndex tunneling (full GateANN)
 #
-# Usage: ./scripts/fig17_ablation.sh
+# Usage: ./scripts/fig18_ablation.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -89,4 +89,4 @@ done
 } > "$OUTFILE"
 
 log "Ablation done -> $OUTFILE"
-log "=== fig17_ablation.sh COMPLETE ==="
+log "=== fig18_ablation.sh COMPLETE ==="

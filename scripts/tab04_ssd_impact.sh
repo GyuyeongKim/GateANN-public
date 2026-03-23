@@ -16,7 +16,7 @@ set -e
 #   export GATEANN_SSD2_INDEX=/slow_ssd/pipeann_indices/bigann100M
 #   export GATEANN_SSD1_LABEL="Samsung 990 Pro (7 GB/s)"  # optional
 #   export GATEANN_SSD2_LABEL="Intel 660p (1.5 GB/s)"     # optional
-#   ./scripts/tab03_ssd_impact.sh
+#   ./scripts/tab04_ssd_impact.sh
 #
 # To copy the index to a second SSD:
 #   cp /ssd1/pipeann_indices/bigann100M* /ssd2/pipeann_indices/
@@ -42,7 +42,7 @@ if [ -z "$GATEANN_SSD1_INDEX" ] || [ -z "$GATEANN_SSD2_INDEX" ]; then
     echo "Example:"
     echo "  export GATEANN_SSD1_INDEX=/fast_ssd/pipeann_indices/bigann100M"
     echo "  export GATEANN_SSD2_INDEX=/slow_ssd/pipeann_indices/bigann100M"
-    echo "  ./scripts/tab03_ssd_impact.sh"
+    echo "  ./scripts/tab04_ssd_impact.sh"
     exit 1
 fi
 
@@ -142,4 +142,4 @@ done
 } > "$OUTFILE"
 
 log "SSD impact done -> $OUTFILE"
-log "=== tab03_ssd_impact.sh COMPLETE ==="
+log "=== tab04_ssd_impact.sh COMPLETE ==="

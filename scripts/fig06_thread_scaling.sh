@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-# Figure 11: Selectivity sweep — BigANN-100M
-# 5% / 10% / 20% selectivity, T=32, full L sweep
+# Figure 5: Thread scaling — BigANN-100M
+# DiskANN vs PipeANN vs GateANN at L=200, sel=10%, T=1..64
 #
-# Usage: ./scripts/fig11_selectivity.sh
+# Usage: ./scripts/fig06_thread_scaling.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -17,8 +17,8 @@ SEARCH_BIN="${REPO_ROOT}/build/tests/search_disk_index_fa"
 
 mkdir -p "$RESULTS_DIR"
 
-L_VALUES="20 30 40 50 70 100 150 200 250 300 400 500 700 1000 1500 2000"
-T=32
+L=200
+THREAD_VALUES="1 2 4 8 16 32 64"
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 
@@ -41,47 +41,48 @@ run_search() {
 DTYPE="uint8"
 INDEX="${INDEX_DIR}/bigann100M"
 QUERY="${DATA_DIR}/bigann100M_query.u8bin"
+NLABELS="${FILTER_DIR}/bigann100M_node_labels.bin"
+QLABELS="${FILTER_DIR}/bigann100M_query_labels.bin"
+GT="${FILTER_DIR}/bigann100M_filtered_gt.bin"
 
-OUTFILE="${RESULTS_DIR}/fig_selectivity.txt"
+OUTFILE="${RESULTS_DIR}/fig_thread_scaling.txt"
 
 {
 echo "========================================"
-echo " Figure 11: Selectivity Sweep (BigANN-100M, T=${T})"
+echo " Figure 5: Thread Scaling (BigANN-100M, L=${L}, sel=10%)"
 echo " $(date)"
 echo "========================================"
 
-for SEL in 5 10 20; do
-    if [ "$SEL" -eq 10 ]; then
-        NLABELS="${FILTER_DIR}/bigann100M_node_labels.bin"
-        QLABELS="${FILTER_DIR}/bigann100M_query_labels.bin"
-        GT="${FILTER_DIR}/bigann100M_filtered_gt.bin"
-    else
-        NLABELS="${FILTER_DIR}/bigann100M_sel${SEL}pct_node_labels.bin"
-        QLABELS="${FILTER_DIR}/bigann100M_sel${SEL}pct_query_labels.bin"
-        GT="${FILTER_DIR}/bigann100M_sel${SEL}pct_filtered_gt.bin"
-    fi
+for T in $THREAD_VALUES; do
+    # DiskANN: mode=0, BW=8, MEM_L=0
+    echo ""
+    echo "[REPORT] DiskANN(mode=0) sel=10% T=${T} bigann100M"
+    log "DiskANN T=${T}..."
+    run_search "$DTYPE" "$INDEX" "$T" 8 \
+        "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
+        0 0 0 $L
+done
 
+for T in $THREAD_VALUES; do
     # PipeANN: mode=2, BW=32, MEM_L=10
     echo ""
-    echo "[REPORT] PipeANN(mode=2) sel=${SEL}% T=${T} bigann100M"
-    log "PipeANN sel=${SEL}% T=${T}..."
-    for L in $L_VALUES; do
-        run_search "$DTYPE" "$INDEX" "$T" 32 \
-            "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
-            2 10 0 $L
-    done
+    echo "[REPORT] PipeANN(mode=2) sel=10% T=${T} bigann100M"
+    log "PipeANN T=${T}..."
+    run_search "$DTYPE" "$INDEX" "$T" 32 \
+        "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
+        2 10 0 $L
+done
 
+for T in $THREAD_VALUES; do
     # GateANN: mode=8, BW=32, MEM_L=10, full_adj_nbrs=32
     echo ""
-    echo "[REPORT] GateANN(mode=8) sel=${SEL}% T=${T} bigann100M"
-    log "GateANN sel=${SEL}% T=${T}..."
-    for L in $L_VALUES; do
-        run_search "$DTYPE" "$INDEX" "$T" 32 \
-            "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
-            8 10 0 32 $L
-    done
+    echo "[REPORT] GateANN(mode=8) sel=10% T=${T} bigann100M"
+    log "GateANN T=${T}..."
+    run_search "$DTYPE" "$INDEX" "$T" 32 \
+        "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
+        8 10 0 32 $L
 done
 } > "$OUTFILE"
 
-log "Selectivity sweep done -> $OUTFILE"
-log "=== fig11_selectivity.sh COMPLETE ==="
+log "Thread scaling done -> $OUTFILE"
+log "=== fig06_thread_scaling.sh COMPLETE ==="

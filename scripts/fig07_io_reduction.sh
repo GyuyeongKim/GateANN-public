@@ -4,7 +4,7 @@ set -e
 # Figure 6: I/O reduction analysis — BigANN-100M
 # GateANN mode=8, T=1, varying L and selectivity
 #
-# Usage: ./scripts/fig06_io_reduction.sh
+# Usage: ./scripts/fig07_io_reduction.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -106,4 +106,4 @@ done
 } > "$OUTFILE"
 
 log "I/O reduction done -> $OUTFILE"
-log "=== fig06_io_reduction.sh COMPLETE ==="
+log "=== fig07_io_reduction.sh COMPLETE ==="

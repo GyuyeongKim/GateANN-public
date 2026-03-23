@@ -272,7 +272,7 @@ print(f"Saved: {out_base}.png and {out_base}.eps")
 plt.close()
 
 # ======================================================================
-# Figure 4: DEEP Throughput Pareto (32 threads, log scale)
+# Figure 5: DEEP Throughput Pareto (32 threads, log scale)
 #   X = Recall@10 (linear); Y = Throughput QPS (log scale)
 #   3 series: DiskANN, F-DiskANN, GateANN
 # ======================================================================

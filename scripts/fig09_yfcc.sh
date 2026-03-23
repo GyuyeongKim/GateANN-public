@@ -5,7 +5,7 @@ set -e
 # PipeANN (post-filter, mode=2) vs GateANN (mode=8), T=32
 # Uses search_disk_index_yfcc binary (spmat metadata format)
 #
-# Usage: ./scripts/fig08_yfcc.sh
+# Usage: ./scripts/fig09_yfcc.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -70,4 +70,4 @@ done
 } > "$OUTFILE"
 
 log "YFCC-10M done -> $OUTFILE"
-log "=== fig08_yfcc.sh COMPLETE ==="
+log "=== fig09_yfcc.sh COMPLETE ==="

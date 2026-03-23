@@ -5,7 +5,7 @@ set -e
 # GateANN mode=8, varying BW=1,2,4,8,16,32,64
 # T=1 and T=32, several L values
 #
-# Usage: ./scripts/fig16_bw_sweep.sh
+# Usage: ./scripts/fig17_bw_sweep.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -71,4 +71,4 @@ done
 } > "$OUTFILE"
 
 log "BW sweep done -> $OUTFILE"
-log "=== fig16_bw_sweep.sh COMPLETE ==="
+log "=== fig17_bw_sweep.sh COMPLETE ==="

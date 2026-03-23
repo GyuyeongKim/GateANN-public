@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-# Figure 4: Main Pareto curves — BigANN-100M + DEEP-100M
+# Figure 5: Main Pareto curves — BigANN-100M + DEEP-100M
 # DiskANN vs PipeANN vs GateANN, T=1 and T=32
 #
-# Usage: ./scripts/fig04_pareto_main.sh
+# Usage: ./scripts/fig05_pareto_main.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -48,7 +48,7 @@ BIGANN_OUT="${RESULTS_DIR}/fig_pareto_bigann100M_main.txt"
 
 {
 echo "========================================"
-echo " Figure 4: BigANN-100M Pareto (sel=10%)"
+echo " Figure 5: BigANN-100M Pareto (sel=10%)"
 echo " $(date)"
 echo "========================================"
 
@@ -101,7 +101,7 @@ DEEP_OUT="${RESULTS_DIR}/fig_pareto_deep100M_main.txt"
 
 {
 echo "========================================"
-echo " Figure 4: DEEP-100M Pareto (sel=10%)"
+echo " Figure 5: DEEP-100M Pareto (sel=10%)"
 echo " $(date)"
 echo "========================================"
 
@@ -139,4 +139,4 @@ done
 } > "$DEEP_OUT"
 
 log "DEEP-100M Pareto done -> $DEEP_OUT"
-log "=== fig04_pareto_main.sh COMPLETE ==="
+log "=== fig05_pareto_main.sh COMPLETE ==="

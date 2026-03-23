@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-# Figure 5: Thread scaling — BigANN-100M
-# DiskANN vs PipeANN vs GateANN at L=200, sel=10%, T=1..64
+# Figure 12: R_max (full_adj_nbrs) sweep — BigANN-100M
+# nbrs = 0, 8, 16, 32, 48, 64 at T=1 and T=32
 #
-# Usage: ./scripts/fig05_thread_scaling.sh
+# Usage: ./scripts/fig13_nbrs_sweep.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -17,8 +17,8 @@ SEARCH_BIN="${REPO_ROOT}/build/tests/search_disk_index_fa"
 
 mkdir -p "$RESULTS_DIR"
 
-L=200
-THREAD_VALUES="1 2 4 8 16 32 64"
+L_VALUES="20 30 40 50 70 100 150 200 250 300 400 500 700 1000 1500 2000"
+NBRS_VALUES="0 8 16 32 48 64"
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 
@@ -45,44 +45,27 @@ NLABELS="${FILTER_DIR}/bigann100M_node_labels.bin"
 QLABELS="${FILTER_DIR}/bigann100M_query_labels.bin"
 GT="${FILTER_DIR}/bigann100M_filtered_gt.bin"
 
-OUTFILE="${RESULTS_DIR}/fig_thread_scaling.txt"
+OUTFILE="${RESULTS_DIR}/fig_nbrs_sweep.txt"
 
 {
 echo "========================================"
-echo " Figure 5: Thread Scaling (BigANN-100M, L=${L}, sel=10%)"
+echo " Figure 12: R_max (nbrs) Sweep (BigANN-100M, sel=10%)"
 echo " $(date)"
 echo "========================================"
 
-for T in $THREAD_VALUES; do
-    # DiskANN: mode=0, BW=8, MEM_L=0
-    echo ""
-    echo "[REPORT] DiskANN(mode=0) sel=10% T=${T} bigann100M"
-    log "DiskANN T=${T}..."
-    run_search "$DTYPE" "$INDEX" "$T" 8 \
-        "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
-        0 0 0 $L
-done
-
-for T in $THREAD_VALUES; do
-    # PipeANN: mode=2, BW=32, MEM_L=10
-    echo ""
-    echo "[REPORT] PipeANN(mode=2) sel=10% T=${T} bigann100M"
-    log "PipeANN T=${T}..."
-    run_search "$DTYPE" "$INDEX" "$T" 32 \
-        "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
-        2 10 0 $L
-done
-
-for T in $THREAD_VALUES; do
-    # GateANN: mode=8, BW=32, MEM_L=10, full_adj_nbrs=32
-    echo ""
-    echo "[REPORT] GateANN(mode=8) sel=10% T=${T} bigann100M"
-    log "GateANN T=${T}..."
-    run_search "$DTYPE" "$INDEX" "$T" 32 \
-        "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
-        8 10 0 32 $L
+for NBRS in $NBRS_VALUES; do
+    for T in 1 32; do
+        echo ""
+        echo "[REPORT] GateANN(mode=8,nbrs=${NBRS}) sel=10% T=${T} bigann100M"
+        log "GateANN nbrs=${NBRS} T=${T}..."
+        for L in $L_VALUES; do
+            run_search "$DTYPE" "$INDEX" "$T" 32 \
+                "$QUERY" "$NLABELS" "$QLABELS" "$GT" \
+                8 10 0 $NBRS $L
+        done
+    done
 done
 } > "$OUTFILE"
 
-log "Thread scaling done -> $OUTFILE"
-log "=== fig05_thread_scaling.sh COMPLETE ==="
+log "R_max sweep done -> $OUTFILE"
+log "=== fig13_nbrs_sweep.sh COMPLETE ==="

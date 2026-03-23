@@ -5,7 +5,7 @@ set -e
 #
 # Extracts per-phase timing from search output (bd_io_us, bd_tunnel_us, bd_process_us).
 #
-# Usage: ./scripts/tab04_breakdown.sh
+# Usage: ./scripts/tab05_breakdown.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -65,4 +65,4 @@ done
 cat "$OUTFILE"
 
 log "Breakdown done -> $OUTFILE"
-log "=== tab04_breakdown.sh COMPLETE ==="
+log "=== tab05_breakdown.sh COMPLETE ==="

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Figure 10: Filtered-DiskANN comparison — BigANN-100M + DEEP-100M
+# Figure 11: Filtered-DiskANN comparison — BigANN-100M + DEEP-100M
 #
 # Uses the OFFICIAL DiskANN repository (https://github.com/microsoft/DiskANN)
 # for building and searching FilteredVamana indices.
@@ -14,7 +14,7 @@ set -e
 #   2. Set DISKANN_BUILD_DIR to the DiskANN build directory:
 #        export DISKANN_BUILD_DIR=/path/to/DiskANN/build
 #
-# Usage: ./scripts/fig10_fdiskann.sh
+# Usage: ./scripts/fig11_fdiskann.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -109,7 +109,7 @@ BIGANN_OUT="${RESULTS_DIR}/fig_fdiskann_bigann100M.txt"
 
 {
 echo "========================================"
-echo " Figure 10: Filtered-DiskANN vs GateANN (BigANN-100M, sel=10%)"
+echo " Figure 11: Filtered-DiskANN vs GateANN (BigANN-100M, sel=10%)"
 echo " $(date)"
 echo "========================================"
 
@@ -197,7 +197,7 @@ DEEP_OUT="${RESULTS_DIR}/fig_fdiskann_deep100M.txt"
 
 {
 echo "========================================"
-echo " Figure 10: Filtered-DiskANN vs GateANN (DEEP-100M, sel=10%)"
+echo " Figure 11: Filtered-DiskANN vs GateANN (DEEP-100M, sel=10%)"
 echo " $(date)"
 echo "========================================"
 
@@ -238,4 +238,4 @@ done
 } > "$DEEP_OUT"
 
 log "DEEP-100M Filtered-DiskANN comparison done -> $DEEP_OUT"
-log "=== fig10_fdiskann.sh COMPLETE ==="
+log "=== fig11_fdiskann.sh COMPLETE ==="

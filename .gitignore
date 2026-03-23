@@ -30,3 +30,4 @@ Thumbs.db
 *.o
 *.a
 *.so
+data/pipeann_indices/
