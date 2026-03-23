@@ -38,7 +38,7 @@ GateANN is implemented as a single additional search mode on top of the [PipeANN
 
 | Component | Minimum | Recommended (Paper Setup) |
 |-----------|---------|---------------------------|
-| CPU | x86-64 with AVX2 | Intel Xeon w9-3495X (56C) |
+| CPU | x86-64 with AVX2 | 2× Intel Xeon Silver 4514Y (32 Cores) |
 | DRAM | 64 GB | 256 GB |
 | SSD | 1 TB NVMe | 2 TB NVMe |
 | OS | Linux 5.10+ (io_uring) | Ubuntu 22.04 LTS |
