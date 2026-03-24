@@ -1,8 +1,8 @@
-# GateANN: I/O-Efficient Filtered Vector Search on Unmodified Graph Indexes
+# GateANN: I/O-Efficient Filtered Vector Search on SSDs
 
 This repository contains the artifact for the paper:
 
-> **GateANN: I/O-Efficient Filtered Vector Search on Unmodified Graph Indexes**
+> **GateANN: I/O-Efficient Filtered Vector Search on SSDs**
 
 GateANN is an SSD-based graph ANNS system that achieves I/O-efficient filtered vector search on an **unmodified** graph index.
 It checks each node's filter metadata **before** issuing SSD I/O and uses **graph tunneling** to traverse non-matching nodes entirely in memory, eliminating up to 90% of SSD reads at 10% selectivity while maintaining recall comparable to post-filtering baselines.
@@ -355,9 +355,14 @@ python3 scripts/plot_pareto_bigann.py   # generates figures/fig_pareto_bigann_{l
 ## Citation
 
 ```bibtex
-@inproceedings{gateann,
-  title     = {{GateANN}: {I/O}-Efficient Filtered Vector Search on Unmodified Graph Indexes},
-  year      = {2026},
+@misc{gateann,
+  title = {{GateANN}: {I/O}-Efficient Filtered Vector Search on {SSDs}},
+  author = {Nakyung Lee and Soobin Cho and Jiwoong Park and Gyuyeong Kim},
+  year = {2026},
+  eprint = {2603.21466},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.OS},
+  url = {https://arxiv.org/abs/2603.21466}
 }
 ```
 
