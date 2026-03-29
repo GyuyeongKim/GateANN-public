@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// PIPEANN ORIGINAL CONTRIBUTION: FullAdjIndex for Filter Tunneling
+// GateANN: FullAdjIndex for Filter Tunneling
 // =============================================================================
 // Stores compact neighbor lists for ALL nodes in DRAM.
 // Used when a filter-fail node needs neighbor expansion WITHOUT an SSD IO.

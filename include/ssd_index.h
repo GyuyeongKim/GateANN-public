@@ -27,7 +27,7 @@ enum SearchMode {
   BEAM_SEARCH = 0, PAGE_SEARCH = 1, PIPE_SEARCH = 2, CORO_SEARCH = 3,
   CACHED_PIPE_SEARCH = 4, BFS_CACHED_PIPE_SEARCH = 5,
   CACHED_BEAM_SEARCH = 6, ADJ_CACHED_PIPE_SEARCH = 7,
-  // PIPEANN ORIGINAL: Filter-aware pipe search (pre-IO filter check + tunneling)
+  // GateANN: Filter-aware pipe search (pre-IO filter check + tunneling)
   FILTER_AWARE_PIPE_SEARCH = 8,
   EARLY_FILTER_PIPE_SEARCH = 9,
 };
@@ -268,7 +268,7 @@ namespace pipeann {
     void copy_index(const std::string &prefix_in, const std::string &prefix_out);
 
     // =========================================================================
-    // PIPEANN ORIGINAL CONTRIBUTION — Filter-Aware IO (mode=8)
+    // GateANN — Filter-Aware IO (mode=8)
     // =========================================================================
     void load_filter_store(const std::string &path) {
       filter_store_ = std::make_unique<FilterStore>();

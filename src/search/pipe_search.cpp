@@ -302,7 +302,7 @@ namespace pipeann {
         }
 
         // =====================================================================
-        // PIPEANN ORIGINAL: Filter-Aware IO — pre-check before any IO or cache
+        // GateANN: Filter-Aware IO — pre-check before any IO or cache
         // =====================================================================
         // If filter_store_ is loaded and this node fails the filter:
         //   - Do NOT send SSD IO (saves 50-200μs)

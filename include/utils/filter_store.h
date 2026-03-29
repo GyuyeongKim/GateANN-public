@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// PIPEANN ORIGINAL CONTRIBUTION: FilterStore for Filter-IO Decoupling
+// GateANN: FilterStore for Filter-IO Decoupling
 // =============================================================================
 // Stores per-node uint8 labels in DRAM for O(1) pre-IO filter checking.
 // Key idea: check filter BEFORE sending SSD IO, not after.

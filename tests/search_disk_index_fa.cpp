@@ -1,5 +1,5 @@
 // =============================================================================
-// PIPEANN ORIGINAL: Filter-Aware Pipe Search Experiment Binary
+// GateANN: Filter-Aware Pipe Search Experiment Binary
 // =============================================================================
 // Compares two modes on filtered ANNS workloads:
 //   mode=4 (baseline): send IO for ALL nodes, post-filter results
