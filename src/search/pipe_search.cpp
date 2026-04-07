@@ -119,14 +119,6 @@ namespace pipeann {
         for (unsigned m = 0; m < nbors_cand_size; ++m) {
           const int nbor_id = node.nbrs[m];
           const float nbor_dist = dist_scratch[m];
-          // Filtered-DiskANN: hard-skip non-matching neighbors (not added to candidate set)
-          if (this->fdiskann_filter_ && this->filter_store_ &&
-              this->filter_store_->loaded() && filter_data != nullptr) {
-            uint8_t q_label = *(const uint8_t *)filter_data;
-            if (!this->filter_store_->passes(nbor_id, q_label)) {
-              continue;
-            }
-          }
           if (stats != nullptr) {
             stats->n_cmps++;
           }

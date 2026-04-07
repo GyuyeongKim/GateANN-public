@@ -64,7 +64,7 @@ def parse_report_sections(filepath):
 
 
 # ---- Load zipf data ----
-zipf_file = '/home/node33/PipeANN/data/filter/results/fig_filter_bigann100M_zipf.txt'
+zipf_file = '/Users/gykim/workspace/PipeANN/data/filter/results/fig_filter_bigann100M_zipf.txt'
 zipf_data = parse_report_sections(zipf_file)
 
 # Keys (PipeANN and GateANN only -- no DiskANN in these plots)
@@ -122,7 +122,7 @@ ax.legend(fontsize=FONTSIZE_LEGEND, loc='lower right', frameon=False)
 
 plt.tight_layout()
 
-out_base = '/home/node33/GateANN/figures/fig_zipf_lat'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_zipf_lat'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")
@@ -154,7 +154,7 @@ ax.set_xlim(left=0.7, right=1.005)
 
 plt.tight_layout()
 
-out_base = '/home/node33/GateANN/figures/fig_zipf_tput'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_zipf_tput'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

@@ -165,7 +165,7 @@ ax.text(mid_x, mid_y, 'Better', fontsize=19, ha='center', va='center',
 
 plt.tight_layout()
 
-out = '/home/node33/GateANN/figures/fig_nbrs_qps'
+out = '/Users/gykim/workspace/GateANN/figures/fig_nbrs_qps'
 fig.savefig(out + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out + '.eps', bbox_inches='tight')
 print(f"Saved: {out}.png and {out}.eps")

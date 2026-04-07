@@ -28,8 +28,8 @@ COLOR_PIPEANN  = (0.404, 0.553, 0.706)  # blue
 COLOR_EARLY    = (0.945, 0.784, 0.533)   # orange
 COLOR_GATEANN  = (0.922, 0.514, 0.478)   # red
 
-RESULTS_DIR = '/home/node33/PipeANN/data/filter/results'
-FIG_DIR = '/home/node33/PipeANN/figures'
+RESULTS_DIR = '/Users/gykim/workspace/PipeANN/data/filter/results'
+FIG_DIR = '/Users/gykim/workspace/PipeANN/figures'
 
 # ---- Parsing helper ----
 def parse_table(filepath, report_key, table_prefix='=== '):

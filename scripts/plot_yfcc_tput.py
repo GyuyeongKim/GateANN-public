@@ -81,7 +81,7 @@ ax.set_xlim(left=0.5, right=1.0)
 plt.tight_layout()
 
 # Save PNG + EPS
-out_base = '/home/node33/GateANN/figures/fig_yfcc_tput'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_yfcc_tput'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

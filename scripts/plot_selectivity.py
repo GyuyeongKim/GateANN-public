@@ -97,11 +97,11 @@ def pareto_filter(recall, qps):
 
 
 # ---- Load selectivity sweep data (T=32) ----
-sel_file = '/home/node33/PipeANN/data/filter/results/fig_filter_bigann100M_sel.txt'
+sel_file = '/Users/gykim/workspace/PipeANN/data/filter/results/fig_filter_bigann100M_sel.txt'
 sel_data = parse_report_sections(sel_file)
 
 # Also load main file for sel=10% T=32
-main_file = '/home/node33/PipeANN/data/filter/results/fig_filter_bigann100M_main.txt'
+main_file = '/Users/gykim/workspace/PipeANN/data/filter/results/fig_filter_bigann100M_main.txt'
 main_data = parse_report_sections(main_file)
 
 # Keys for 32T data
@@ -161,7 +161,7 @@ ax.set_ylim(top=1.5e5)
 
 plt.tight_layout()
 
-out_base = '/home/node33/GateANN/figures/fig_sel_qps'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_sel_qps'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")
@@ -223,7 +223,7 @@ ax.set_ylim(0, max(speedups) * 1.15)
 
 plt.tight_layout()
 
-out_base = '/home/node33/GateANN/figures/fig_sel_speedup'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_sel_speedup'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

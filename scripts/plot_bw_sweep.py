@@ -98,7 +98,7 @@ ax.legend(fontsize=FONTSIZE_LEGEND, loc='center right',
 ax.grid(True, linestyle='--', alpha=0.4)
 
 plt.tight_layout()
-out_base = '/home/node33/GateANN/figures/fig_bw_sweep_qps'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_bw_sweep_qps'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")
@@ -147,7 +147,7 @@ ax.legend(fontsize=FONTSIZE_LEGEND, loc='lower right', ncol=1,
 ax.grid(True, linestyle='--', alpha=0.4)
 
 plt.tight_layout()
-out_base = '/home/node33/GateANN/figures/fig_bw_sweep_recall'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_bw_sweep_recall'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

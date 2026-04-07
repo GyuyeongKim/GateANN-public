@@ -112,7 +112,7 @@ ax.grid(True, linestyle='--', alpha=0.4)
 ax.set_ylim(bottom=0.7, top=1.005)
 
 plt.tight_layout()
-out_base = '/home/node33/GateANN/figures/fig_pareto_deep_lat'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_pareto_deep_lat'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")
@@ -141,7 +141,7 @@ ax.grid(True, linestyle='--', alpha=0.4)
 ax.set_xlim(left=0.7, right=1.005)
 
 plt.tight_layout()
-out_base = '/home/node33/GateANN/figures/fig_pareto_deep_tput'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_pareto_deep_tput'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

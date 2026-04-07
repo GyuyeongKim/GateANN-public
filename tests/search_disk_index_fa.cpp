@@ -160,8 +160,8 @@ int run(int argc, char **argv) {
   std::unique_ptr<pipeann::SSDIndex<T>> idx_(
       new pipeann::SSDIndex<T>(m, reader, nbr_handler, true));
 
-  // mode=0 and mode=10 use synchronous beam search; others use async IO
-  bool use_page_search = (search_mode != BEAM_SEARCH && search_mode != 10);
+  // mode=0 uses synchronous beam search; others use async IO
+  bool use_page_search = (search_mode != BEAM_SEARCH);
   int res = idx_->load(index_prefix.c_str(), num_threads, use_page_search);
   if (res != 0) return res;
 
@@ -204,17 +204,6 @@ int run(int argc, char **argv) {
     std::cout << "Early Filter Check mode: IO unchanged, skip exact distance for non-matching nodes" << std::endl;
   }
 
-  // mode=10: Filtered-DiskANN — hard filter during candidate expansion.
-  // Official approach: compute PQ distances for all neighbors, then only add
-  // filter-matching neighbors to the candidate set.  Non-matching nodes are
-  // dropped, so they never get expanded.  All disk IOs still happen (no pre-IO
-  // filter skip), which is the key difference from GateANN (mode=8).
-  if (search_mode == 10) {
-    idx_->set_fdiskann_filter(true);
-    idx_->compute_fdiskann_medoids();
-    std::cout << "Filtered-DiskANN mode: hard candidate filter + per-label medoids" << std::endl;
-  }
-
   // Selector for mode=4 post-filter baseline
   LabelEqSelector selector(idx_->get_filter_store());
 
@@ -227,11 +216,9 @@ int run(int argc, char **argv) {
   bool is_fa = (search_mode == FILTER_AWARE_PIPE_SEARCH);
   bool is_early = (search_mode == EARLY_FILTER_PIPE_SEARCH);
   bool is_beam = (search_mode == BEAM_SEARCH);
-  bool is_fdiskann = (search_mode == 10);
   std::string mode_name = is_fa ? "FilterAware(mode=8)"
                         : is_early ? "EarlyFilter(mode=9)"
                         : is_beam ? "DiskANN(mode=0)"
-                        : is_fdiskann ? "FilteredDiskANN(mode=10)"
                         : "Baseline(mode=2)";
   std::cout << "\n=== " << mode_name << " ===\n";
   std::cout << std::setw(6) << "L"
@@ -262,18 +249,13 @@ int run(int argc, char **argv) {
                           res_buf.data() + i * recall_at,
                           nullptr, beamwidth, &stats[i],
                           nullptr, &ql);
-      } else if (is_beam || is_fdiskann) {
+      } else if (is_beam) {
         // mode=0: DiskANN beam_search + post-filter
-        // mode=10: Filtered-DiskANN beam_search + hard candidate filter
-        // Both use synchronous IO; mode=10 additionally passes filter_data
-        // to beam_search so non-matching neighbors are skipped during expansion.
         std::vector<uint32_t> cand_tags(L);
         std::vector<float> cand_dists(L);
         idx_->beam_search(query + i * query_dim, L, mem_L, L,
                           cand_tags.data(), cand_dists.data(),
-                          beamwidth, &stats[i],
-                          nullptr, false,
-                          is_fdiskann ? (const void *)&ql : nullptr);
+                          beamwidth, &stats[i]);
         // Post-filter: keep only nodes with matching label
         uint32_t *out = res_buf.data() + i * recall_at;
         size_t found = 0;
@@ -335,7 +317,7 @@ int main(int argc, char **argv) {
               << " <float|uint8> <index_prefix> <threads> <bw>"
               << " <query.fbin> <node_labels.bin> <query_labels.bin> <filtered_gt.bin>"
               << " <K> <metric> <nbr_type>"
-              << " <mode(0=diskann,2=pipeann,8=filter-aware,10=filtered-diskann)>"
+              << " <mode(0=diskann,2=pipeann,8=filter-aware)>"
               << " <mem_L> <cache_budget>"
               << " [full_adj_max_nbrs(mode=8)]"
               << " [--lazy_adj]"

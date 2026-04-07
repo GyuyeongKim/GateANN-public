@@ -100,7 +100,7 @@ def parse_report_sections(filepath):
 
 
 # ---- Load main data (sel=10%) ----
-main_file = '/home/node33/PipeANN/data/filter/results/fig_filter_bigann100M_main.txt'
+main_file = '/Users/gykim/workspace/PipeANN/data/filter/results/fig_filter_bigann100M_main.txt'
 main_data = parse_report_sections(main_file)
 
 # Extract 1T data for I/O vs L plot
@@ -134,7 +134,7 @@ ax.grid(True, linestyle='--', alpha=0.4)
 
 plt.tight_layout()
 
-out_base = '/home/node33/GateANN/figures/fig_io_vs_l'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_io_vs_l'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")
@@ -142,7 +142,7 @@ plt.close(fig)
 
 # ========== fig_io_theory: measured I/O reduction vs expected 1/s ==========
 # Load selectivity sweep data
-sel_file = '/home/node33/PipeANN/data/filter/results/fig_filter_bigann100M_sel.txt'
+sel_file = '/Users/gykim/workspace/PipeANN/data/filter/results/fig_filter_bigann100M_sel.txt'
 sel_data = parse_report_sections(sel_file)
 
 selectivities = [0.05, 0.10, 0.20]
@@ -220,7 +220,7 @@ ax.set_ylim(0, 40)
 
 plt.tight_layout()
 
-out_base = '/home/node33/GateANN/figures/fig_io_theory'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_io_theory'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

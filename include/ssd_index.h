@@ -5,8 +5,6 @@
 #include <queue>
 #include <string>
 #include <set>
-#include <unordered_map>
-#include <random>
 #include <omp.h>
 
 #include "aligned_file_reader.h"
@@ -382,54 +380,6 @@ namespace pipeann {
     }
     void set_filter_precheck(bool v)       { filter_precheck_ = v; }
     void set_early_filter_check(bool v)    { early_filter_check_ = v; }
-    void set_fdiskann_filter(bool v)       { fdiskann_filter_ = v; }
-
-    // Filtered-DiskANN: compute per-label medoids following official DiskANN.
-    // Each label gets a start-point node that carries that label, so filtered
-    // beam_search begins in the relevant graph region instead of the global
-    // entry point.  Official approach: random sample + load-balance across
-    // labels (Algorithm 2, "FindMedoid" in WWW'23 paper).
-    void compute_fdiskann_medoids() {
-      if (!filter_store_ || !filter_store_->loaded()) return;
-      fdiskann_medoids_.clear();
-
-      // Group node IDs by label
-      std::unordered_map<uint8_t, std::vector<uint32_t>> label_nodes;
-      for (uint32_t i = 0; i < (uint32_t)filter_store_->size(); i++) {
-        label_nodes[filter_store_->get_label(i)].push_back(i);
-      }
-
-      // Official DiskANN: sample up to 25 candidates per label, pick the one
-      // with the lowest reuse count (load-balancing heuristic).  With one
-      // medoid per label the reuse count is always 0, so we simply pick the
-      // middle element of the sample (more likely to be graph-central than
-      // the very first or last node).
-      std::mt19937 rng(42);
-      constexpr size_t kSampleSize = 25;
-      for (auto &[label, nodes] : label_nodes) {
-        if (nodes.empty()) continue;
-        size_t n = std::min(kSampleSize, nodes.size());
-        // Partial shuffle: move n random elements to front
-        for (size_t i = 0; i < n; i++) {
-          std::uniform_int_distribution<size_t> dist(i, nodes.size() - 1);
-          std::swap(nodes[i], nodes[dist(rng)]);
-        }
-        // Pick the middle of the sample
-        fdiskann_medoids_[label] = nodes[n / 2];
-      }
-
-      LOG(INFO) << "Filtered-DiskANN medoids: " << fdiskann_medoids_.size() << " labels";
-      for (auto &[label, medoid] : fdiskann_medoids_) {
-        LOG(INFO) << "  label=" << (int)label
-                  << " medoid=" << medoid
-                  << " (of " << label_nodes[label].size() << " nodes)";
-      }
-    }
-
-    uint32_t get_fdiskann_medoid(uint8_t label) const {
-      auto it = fdiskann_medoids_.find(label);
-      return (it != fdiskann_medoids_.end()) ? it->second : meta_.entry_point_id;
-    }
 
    private:
     // Background insert I/O commit.
@@ -513,8 +463,6 @@ namespace pipeann {
     std::unique_ptr<FullAdjIndex> full_adj_;
     bool filter_precheck_ = false;  // set true only for mode=8
     bool early_filter_check_ = false; // mode=9: check filter after IO, skip exact dist if non-matching
-    bool fdiskann_filter_ = false; // Filtered-DiskANN: hard-filter non-matching neighbors from candidate set
-    std::unordered_map<uint8_t, uint32_t> fdiskann_medoids_; // per-label start points
 
     void init_buffers(uint64_t nthreads);
     void destroy_buffers();

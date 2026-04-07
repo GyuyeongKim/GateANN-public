@@ -56,7 +56,7 @@ ax.legend(fontsize=FONTSIZE_LEGEND_TS, loc='upper center',
 ax.grid(True, linestyle='--', alpha=0.4)
 
 plt.tight_layout()
-out_base = '/home/node33/GateANN/figures/fig_motivation_thread_scaling'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_motivation_thread_scaling'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")
@@ -76,7 +76,7 @@ FONTSIZE_LEGEND_C = 20
 LINEWIDTH_C = 2.5
 MARKERSIZE_C = 10
 
-RESULTS_DIR = '/home/node33/PipeANN/data/filter/results'
+RESULTS_DIR = '/Users/gykim/workspace/PipeANN/data/filter/results'
 
 def parse_table(filepath, report_key):
     """Parse L / QPS / Recall rows from a [REPORT] section."""
@@ -157,7 +157,7 @@ ax.set_position([pos.x0, pos.y0, pos.width, 1.922 / 4.2])
 ax.legend(fontsize=FONTSIZE_LEGEND_C, loc='upper center',
           bbox_to_anchor=(0.5, 1.555), ncol=1,
           frameon=False)
-out_base = '/home/node33/GateANN/figures/fig_motivation_collapse'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_motivation_collapse'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

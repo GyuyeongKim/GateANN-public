@@ -7,8 +7,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-RESULT_FILE = "/home/node33/PipeANN/data/filter/results/fig_spatial_correlation.txt"
-FIG_DIR = "/home/node33/PipeANN/figures"
+RESULT_FILE = "/Users/gykim/workspace/PipeANN/data/filter/results/fig_spatial_correlation.txt"
+FIG_DIR = "/Users/gykim/workspace/PipeANN/figures"
 
 plt.rcParams['font.family'] = 'Nimbus Sans'
 plt.rcParams['mathtext.fontset'] = 'custom'

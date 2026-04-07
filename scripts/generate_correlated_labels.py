@@ -12,7 +12,7 @@ Q5: Generate spatially correlated labels using k-means on BigANN-100M.
 import struct, os, sys, time
 import numpy as np
 
-DATA_DIR = "/home/node33/faiss-dev/benchmarks/data"
+DATA_DIR = "/Users/gykim/workspace/faiss-dev/benchmarks/data"
 BASE_FILE = f"{DATA_DIR}/bigann100M_base.u8bin"
 QUERY_FILE = f"{DATA_DIR}/bigann100M_query.u8bin"
 GT_FILE = f"{DATA_DIR}/bigann100M_gt.bin"

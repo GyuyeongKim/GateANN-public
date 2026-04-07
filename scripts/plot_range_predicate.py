@@ -7,8 +7,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
-RESULT_FILE = "/home/node33/PipeANN/data/filter/results/fig_range_predicate.txt"
-FIG_DIR = "/home/node33/PipeANN/figures"
+RESULT_FILE = "/Users/gykim/workspace/PipeANN/data/filter/results/fig_range_predicate.txt"
+FIG_DIR = "/Users/gykim/workspace/PipeANN/figures"
 
 plt.rcParams['font.family'] = 'Nimbus Sans'
 plt.rcParams['mathtext.fontset'] = 'custom'

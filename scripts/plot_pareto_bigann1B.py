@@ -19,8 +19,8 @@ FONTSIZE_LEGEND = 20
 LINEWIDTH = 2.5
 MARKERSIZE = 10
 
-RESULTS_DIR = '/home/node33/PipeANN/data/filter/results'
-FIG_DIR = '/home/node33/PipeANN/figures'
+RESULTS_DIR = '/Users/gykim/workspace/PipeANN/data/filter/results'
+FIG_DIR = '/Users/gykim/workspace/PipeANN/figures'
 
 # ---- Parsing ----
 def parse_report(filepath):

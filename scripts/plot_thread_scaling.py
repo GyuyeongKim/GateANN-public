@@ -64,7 +64,7 @@ ax.legend(fontsize=FONTSIZE_LEGEND, loc='upper center',
 ax.grid(True, linestyle='--', alpha=0.4)
 
 plt.tight_layout()
-out_base = '/home/node33/GateANN/figures/fig_thread_scaling'
+out_base = '/Users/gykim/workspace/GateANN/figures/fig_thread_scaling'
 fig.savefig(out_base + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out_base + '.eps', bbox_inches='tight')
 print(f"Saved: {out_base}.png and {out_base}.eps")

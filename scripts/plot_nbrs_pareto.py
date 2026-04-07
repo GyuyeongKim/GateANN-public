@@ -131,7 +131,7 @@ ax.set_xlim(left=0.8, right=1.02)
 
 plt.subplots_adjust(top=0.75)
 
-out = '/home/node33/GateANN/figures/fig_nbrs_pareto'
+out = '/Users/gykim/workspace/GateANN/figures/fig_nbrs_pareto'
 fig.savefig(out + '.png', dpi=200, bbox_inches='tight')
 fig.savefig(out + '.eps', bbox_inches='tight')
 print(f"Saved: {out}.png and {out}.eps")

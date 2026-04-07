@@ -75,14 +75,7 @@ namespace pipeann {
       mem_index_->search_with_tags(query, mem_L, mem_L, mem_tags.data(), mem_dists.data());
       compute_and_add_to_retset(mem_tags.data(), std::min((unsigned) mem_L, (unsigned) l_search));
     } else {
-      // Filtered-DiskANN: start from per-label medoid (official DiskANN behavior).
-      if (this->fdiskann_filter_ && filter_data != nullptr && !this->fdiskann_medoids_.empty()) {
-        uint8_t q_label = *(const uint8_t *)filter_data;
-        uint32_t medoid = this->get_fdiskann_medoid(q_label);
-        compute_and_add_to_retset(&medoid, 1);
-      } else {
-        compute_and_add_to_retset(&meta_.entry_point_id, 1);
-      }
+      compute_and_add_to_retset(&meta_.entry_point_id, 1);
     }
 
     std::sort(retset.begin(), retset.begin() + cur_list_size);
@@ -223,14 +216,6 @@ namespace pipeann {
             float dist = dist_scratch[m];
             if (stats != nullptr) {
               stats->n_cmps++;
-            }
-            // Filtered-DiskANN: hard-skip non-matching neighbors
-            if (this->fdiskann_filter_ && this->filter_store_ &&
-                this->filter_store_->loaded() && filter_data != nullptr) {
-              uint8_t q_label = *(const uint8_t *)filter_data;
-              if (!this->filter_store_->passes(id, q_label)) {
-                continue;
-              }
             }
             if (dist >= retset[cur_list_size - 1].distance && (cur_list_size == l_search))
               continue;

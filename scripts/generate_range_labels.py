@@ -8,7 +8,7 @@ The equality FilterStore treats bin ID as label, simulating range predicates.
 import struct, os, time
 import numpy as np
 
-DATA_DIR = "/home/node33/faiss-dev/benchmarks/data"
+DATA_DIR = "/Users/gykim/workspace/faiss-dev/benchmarks/data"
 BASE_FILE = f"{DATA_DIR}/bigann100M_base.u8bin"
 QUERY_FILE = f"{DATA_DIR}/bigann100M_query.u8bin"
 GT_FILE = f"{DATA_DIR}/bigann100M_gt.bin"
